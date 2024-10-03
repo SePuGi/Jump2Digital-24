@@ -472,6 +472,27 @@ namespace ConDB
             }
         }
 
+        public bool ImportActivities(List<Actividad> actividadList)
+        {
+            foreach (Actividad actividad in actividadList)
+            {
+                string query = $"INSERT INTO actividad (nombre, descripcion, capacidad_maxima) VALUES ('{actividad.Nombre}', '{actividad.Descripcion}', {actividad.Capacidad_maxima})";
+                command = new MySqlCommand(query, connection);
+
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (MySqlException ex)
+                {
+                    Console.WriteLine("Error al insertar actividad: " + ex.Message);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         #endregion
     }
 }

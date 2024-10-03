@@ -240,6 +240,16 @@ namespace PruebaBackendHackaton
             
         }
 
+        public static bool ImportActivities(List<Actividad> actividades)
+        {
+            if (connection == null)
+            {
+                throw new System.Exception("No se ha inicializado la conexión a la base de datos");
+            }
+
+            return connection.ImportActivities(actividades);
+        }
+
         #endregion
     }
 }

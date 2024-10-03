@@ -18,8 +18,8 @@ namespace PruebaBackendHackaton.Controllers
         public IActionResult Get()
         {
             Console.WriteLine("GET activity");
-            try 
-            { 
+            try
+            {
                 List<Actividad> activities = DataBase.GetActivities();
                 return Ok(new
                 {
@@ -29,9 +29,9 @@ namespace PruebaBackendHackaton.Controllers
                     data = activities
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return Ok(new
+                return BadRequest(new
                 {
                     success = false,
                     resource = "GET",
@@ -64,11 +64,42 @@ namespace PruebaBackendHackaton.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(new
+                return BadRequest(new
                 {
                     success = false,
                     resource = "GET",
                     message = "No se encontró la actividad",
+                    data = ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Exporta todas las actividades a un archivo JSON
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("export")]
+        public IActionResult ExportActivities()
+        {
+            Console.WriteLine("GET export activities");
+            try
+            {
+                List<Actividad> activities = DataBase.GetActivities();
+
+                string json = JsonSerializer.Serialize(activities);
+
+                var fileName = "activities.json";
+                var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+
+                return File(bytes, "application/json", fileName);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    resource = "GET",
+                    message = "No se han podido exportar las actividades",
                     data = ex.Message
                 });
             }
@@ -93,7 +124,7 @@ namespace PruebaBackendHackaton.Controllers
 
                 bool result = DataBase.SetActivity(actividad);
 
-                if(result)
+                if (result)
                 {
                     return Ok(new
                     {
@@ -106,9 +137,9 @@ namespace PruebaBackendHackaton.Controllers
                 else
                     throw new Exception("No se pudo insertar la actividad");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return Ok(new
+                return BadRequest(new
                 {
                     succes = false,
                     resource = "POST",
@@ -116,7 +147,7 @@ namespace PruebaBackendHackaton.Controllers
                     data = ex.Message
                 });
             }
-            
+
         }
 
         /// <summary>
@@ -139,9 +170,9 @@ namespace PruebaBackendHackaton.Controllers
             {
                 int result = DataBase.AddUserToActivity(id_usuario, id_actividad);
 
-                if(result == 0)
+                if (result == 0)
                 {
-                    return Ok(new
+                    return BadRequest(new
                     {
                         success = false,
                         resource = "POST",
@@ -168,9 +199,9 @@ namespace PruebaBackendHackaton.Controllers
                         }
                     });
                 }
-                else if(result == 3) 
-                { 
-                    return Ok(new
+                else if (result == 3)
+                {
+                    return BadRequest(new
                     {
                         success = false,
                         resource = "POST",
@@ -183,11 +214,11 @@ namespace PruebaBackendHackaton.Controllers
                     });
                 }
                 else
-                throw new Exception("No se pudo agregar el usuario a la actividad");
+                    throw new Exception("No se pudo agregar el usuario a la actividad");
             }
             catch (Exception ex)
             {
-                return Ok(new
+                return BadRequest(new
                 {
                     success = false,
                     resource = "POST",
@@ -231,9 +262,9 @@ namespace PruebaBackendHackaton.Controllers
                 else
                     throw new Exception("No se pudo actualizar la actividad");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return Ok(new {
+                return BadRequest(new {
                     success = false,
                     resource = "PUT",
                     message = "No se pudo actualizar la actividad",
@@ -251,7 +282,7 @@ namespace PruebaBackendHackaton.Controllers
         public IActionResult Delete([FromBody] JsonDocument value)
         {
             Console.WriteLine("DELETE activity");
-            
+
             try
             {
                 int id = value.RootElement.GetProperty("id").GetInt32();
@@ -275,9 +306,9 @@ namespace PruebaBackendHackaton.Controllers
                 else
                     throw new Exception("Error desconocido");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return Ok(new
+                return BadRequest(new
                 {
                     success = false,
                     resource = "DELETE",
@@ -287,12 +318,86 @@ namespace PruebaBackendHackaton.Controllers
             }
         }
 
-        /*
-         TODO:  
-         Exportar activitats en format JSON
-         Importar activitats des d'un arxiu JSON
+        /// <summary>
+        /// Importar actividades desde un archivo JSON
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        [HttpPost("import")]
+        public IActionResult ImportActivities(IFormFile file)
+        {
+            Console.WriteLine("ARCHIVO RECIBIDO");
+            
+            if (file == null || file.Length == 0)
+                return BadRequest("Por favor, selecciona un archivo.");
 
-         
-         */
+            var extension = Path.GetExtension(file.FileName);
+            if (extension.ToLower() != ".json")
+                return BadRequest("Solo se permiten archivos JSON.");
+
+            Console.WriteLine("POST import activities");
+            try
+            { 
+                List<Actividad> activities = new List<Actividad>();
+
+                string fileContent;
+                using (var reader = new StreamReader(file.OpenReadStream()))
+                {
+                    fileContent = reader.ReadToEnd();
+                }
+
+                using (JsonDocument jsonDocument = JsonDocument.Parse(fileContent))
+                {
+                    JsonElement root = jsonDocument.RootElement;
+                    if (root.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (JsonElement element in root.EnumerateArray())
+                        {
+                            Actividad actividad = new Actividad
+                            (
+                                0,
+                                element.GetProperty("nom").GetString(),
+                                element.GetProperty("descripció").GetString().Replace("'", ""),
+                                element.GetProperty("capacitat_màxima").GetInt32()
+                            );
+                            activities.Add(actividad);
+                        }
+                    }
+                    else
+                        return BadRequest(new
+                        {
+                            success = false,
+                            resource = "POST import",
+                            message = "No se pudieron importar las actividades",
+                            data = "No se encontró un array de actividades"
+                        });
+                }
+                
+                bool result = DataBase.ImportActivities(activities);
+
+                if (result)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        resource = "POST",
+                        message = "Actividades importadas",
+                        data = activities
+                    });
+                }
+                else
+                    throw new Exception("No se pudieron importar las actividades");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    resource = "POST",
+                    message = "No se pudieron importar las actividades",
+                    data = ex.Message
+                });
+            }
+        }
     }
 }
