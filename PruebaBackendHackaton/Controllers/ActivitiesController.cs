@@ -10,7 +10,10 @@ namespace PruebaBackendHackaton.Controllers
     [ApiController]
     public class ActivitiesController : ControllerBase
     {
-        //Action Get: api/Activity
+        /// <summary>
+        /// Devuelve una lista con todas las actividades
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Get()
         {
@@ -39,8 +42,11 @@ namespace PruebaBackendHackaton.Controllers
             }
         }
 
-        //Action Get: api/Activity/5
-        //Obtener todos los usuarios de una actividad 
+        /// <summary>
+        /// Devuelva una actividad especifica con todos los inscritos
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
@@ -68,7 +74,11 @@ namespace PruebaBackendHackaton.Controllers
             }
         }
 
-        //Action Post: api/Activity
+        /// <summary>
+        /// Crear una actividad
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Post([FromBody] JsonDocument value)
         {
@@ -109,7 +119,90 @@ namespace PruebaBackendHackaton.Controllers
             
         }
 
-        //Action Put: api/Activity
+        /// <summary>
+        /// 0 => ya esta inscrito
+        /// 1 => inscrito correctamente
+        /// 2 => error
+        /// 3 => maximo de registros
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <param name="activity_id"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        [HttpPost("{id_actividad}")]
+        public IActionResult PostUserToActivity(int id_actividad, [FromBody] JsonDocument value)
+        {
+            Console.WriteLine("POST user to activity");
+            int id_usuario = value.RootElement.GetProperty("id").GetInt32();
+
+            try
+            {
+                int result = DataBase.AddUserToActivity(id_usuario, id_actividad);
+
+                if(result == 0)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        resource = "POST",
+                        message = "El usuario ya estaba inscrito",
+                        data = new
+                        {
+                            id_actividad = id_actividad,
+                            id_usuario = id_usuario
+                        }
+                    });
+                }
+                else if (result == 1)
+                {
+                    Console.WriteLine("Usuario agregado a la actividad");
+                    return Ok(new
+                    {
+                        success = true,
+                        resource = "POST",
+                        message = "Usuario agregado a la actividad",
+                        data = new
+                        {
+                            id_actividad = id_actividad,
+                            id_usuario = id_usuario
+                        }
+                    });
+                }
+                else if(result == 3) 
+                { 
+                    return Ok(new
+                    {
+                        success = false,
+                        resource = "POST",
+                        message = "La actividad tiene el maximo de registros",
+                        data = new
+                        {
+                            id_actividad = id_actividad,
+                            id_usuario = id_usuario
+                        }
+                    });
+                }
+                else
+                throw new Exception("No se pudo agregar el usuario a la actividad");
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    resource = "POST",
+                    message = "No se pudo agregar el usuario a la actividad",
+                    data = ex.Message
+                });
+            }
+        }
+
+
+        /// <summary>
+        /// Actualizar una actividad
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPut]
         public IActionResult Put([FromBody] JsonDocument value)
         {
@@ -149,7 +242,11 @@ namespace PruebaBackendHackaton.Controllers
             }
         }
 
-        //Action Delete: api/Activity
+        /// <summary>
+        /// Elimina una actividad siempre que no tenga usuarios registrados en ella
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpDelete]
         public IActionResult Delete([FromBody] JsonDocument value)
         {
@@ -159,9 +256,11 @@ namespace PruebaBackendHackaton.Controllers
             {
                 int id = value.RootElement.GetProperty("id").GetInt32();
 
-                bool result = DataBase.DeleteActivity(id);
+                int result = DataBase.DeleteActivity(id);
 
-                if (result)
+                if (result == 0)
+                    throw new Exception("No se puede eliminar la actividad, aún hay usuarios inscritos");
+                else if (result == 1)
                 {
                     return Ok(new
                     {
@@ -171,8 +270,10 @@ namespace PruebaBackendHackaton.Controllers
                         data = id
                     });
                 }
-                else
+                else if (result == 2)
                     throw new Exception("No se pudo eliminar la actividad");
+                else
+                    throw new Exception("Error desconocido");
             }
             catch(Exception ex)
             {
@@ -185,5 +286,13 @@ namespace PruebaBackendHackaton.Controllers
                 });
             }
         }
+
+        /*
+         TODO:  
+         Exportar activitats en format JSON
+         Importar activitats des d'un arxiu JSON
+
+         
+         */
     }
 }

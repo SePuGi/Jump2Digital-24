@@ -91,13 +91,24 @@ namespace Modelo
         //Validaciones
         public bool ValidarDNI(string value)
         {
-            //TODO: Validar DNI con calculo de letra
-            Regex dni = new Regex("^[0-9]{8}[A-Z]$");
-            if (dni.IsMatch(value))
-            {
-                return true;
-            }
-            return false;
+            // Verificar longitud
+            if (value.Length != 9)
+                return false;
+
+            string numeros = value.Substring(0, 8);
+            char letra = value[8];
+
+            //Comprobar que son numeros
+            if (!int.TryParse(numeros, out _))
+                return false;
+
+            //Calcular letra
+            int indice = int.Parse(numeros) % 23;
+
+            string letrasControl = "TRWAGMYFPDXBNJZSQVHLCKE";
+            char letraCorrecta = letrasControl[indice];
+
+            return letra.ToString().ToUpper() == letraCorrecta.ToString();
         }
 
         public bool ValidarNombre(string value)

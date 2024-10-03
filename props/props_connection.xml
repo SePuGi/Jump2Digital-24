@@ -1,0 +1,6 @@
+<db_connection>
+    <server value="localhost"/>
+    <database value="hackaton"/>
+    <user value="admin"/>
+    <password value="admin"/>
+</db_connection>

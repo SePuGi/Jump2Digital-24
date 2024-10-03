@@ -11,22 +11,27 @@ namespace PruebaBackendHackaton
         private static DB_connection connection_activity;   //Gets de activity
         private static DB_connection connection;            //Sets, updates, deletes
 
-        // RECOGER LOS VALORES DE LA CONNECTIONSTRING DE UN ARCHIVO DE CONFIGURACIÓN
         public static void InitializeConnection()
         {
-            //OBTENER DATOS DE UN ARCHIVO DE CONFIGURACIÓN
-            connection = new DB_connection("localhost", "hackaton", "admin", "admin");
-            connection_user = new DB_connection("localhost", "hackaton", "admin", "admin");
-            connection_activity = new DB_connection("localhost", "hackaton", "admin", "admin");
-        }
+            string[] lines = System.IO.File.ReadAllLines("../props/props_connection.xml");
 
-        public static void CloseConnection()
-        {
-            connection.CloseConnection();
+            string server = lines[1].Split("\"")[1];
+            string database = lines[2].Split("\"")[1];
+            string user = lines[3].Split("\"")[1];
+            string password = lines[4].Split("\"")[1];
+
+            connection = new DB_connection(server, database, user, password);
+            connection_user = new DB_connection(server, database, user, password);
+            connection_activity = new DB_connection(server, database, user, password);
         }
 
         #region Usuarios
 
+        /// <summary>
+        /// Obtiene una lista con todos los usuarios
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         public static List<Usuario> GetUsers()
         {
             if (connection_user == null)
@@ -39,6 +44,12 @@ namespace PruebaBackendHackaton
             return usuarios;
         }
 
+        /// <summary>
+        /// Devuelve un usuario a partir de su id con las actividades en las que está inscrito
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         public static Usuario GetUserById(int id)
         {
             if (connection_user == null)
@@ -51,6 +62,12 @@ namespace PruebaBackendHackaton
             return usuario;
         }
 
+        /// <summary>
+        /// Crea un usuario
+        /// </summary>
+        /// <param name="usuario"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         public static bool SetUser(Usuario usuario)
         {
             if (connection == null)
@@ -61,6 +78,32 @@ namespace PruebaBackendHackaton
             return connection.SetUser(usuario);
         }
 
+        /// <summary>
+        /// 0 => Usuario eliminado de la actividad
+        /// 1 => Usuario no estaba inscrito
+        /// 2 => Error
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <param name="activity_id"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        public static int RemoveUserFromActivity(int user_id, int activity_id)
+        {
+            if (connection == null)
+            {
+                throw new System.Exception("No se ha inicializado la conexión a la base de datos");
+            }
+
+            return connection.RemoveUserFromActivity(user_id, activity_id);
+        }
+
+        /// <summary>
+        /// Actualiza la información de un usuario
+        /// </summary>
+        /// <param name="usuario"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        /// <exception cref="Exception"></exception>
         public static bool UpdateUser(Usuario usuario)
         {
             if (connection == null)
@@ -74,6 +117,12 @@ namespace PruebaBackendHackaton
                 throw new Exception("El usuario no existe");
         }
 
+        /// <summary>
+        /// Elimina un usuario siempre y cuando no esté inscrito en ninguna actividad
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         public static bool DeleteUser(int id)
         {
             if (connection == null)
@@ -83,23 +132,16 @@ namespace PruebaBackendHackaton
 
             return connection.DeleteUser(id);
         }
-        /*
 
-            GetUserActivities(int user_id)   Return json(usuario)
-            
-            -- controlar que un usuario no pueda inscribirse 2 veces
-            -- controlar que un usuario no pueda inscribirse si la actividad esta completa
-            SetUserToActivitie(int user_id, int activitie_id)
-            If true return 1 else if max_participantes return 0 else (error) return -1
-         
-            -- Si una actividad no tiene usuarios inscritos, no dejara eliminar usuarios inexistentes
-            DeleteUserFromActivitie(int user_id, int activitie_id)
-            If true return 1 else return -1
-         */
         #endregion
 
         #region Actividades
 
+        /// <summary>
+        /// Devuelve una lista con todas las actividades
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         public static List<Actividad> GetActivities()
         {
             if (connection_activity == null)
@@ -129,6 +171,12 @@ namespace PruebaBackendHackaton
             return activity;
         }
 
+        /// <summary>
+        /// Crea una actividad
+        /// </summary>
+        /// <param name="actividad"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         public static bool SetActivity(Actividad actividad)
         {
             if (connection == null)
@@ -139,6 +187,32 @@ namespace PruebaBackendHackaton
             return connection.SetActivity(actividad);
         }
 
+        /// <summary>
+        /// 0 => ya esta inscrito
+        /// 1 => inscrito correctamente
+        /// 2 => error
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <param name="activity_id"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static int AddUserToActivity(int user_id, int activity_id)
+        {
+            if (connection == null)
+            {
+                throw new System.Exception("No se ha inicializado la conexión a la base de datos");
+            }
+
+            return connection.AddUserToActivity(user_id, activity_id);
+        }
+
+
+        /// <summary>
+        /// Actualizar la información de una actividad
+        /// </summary>
+        /// <param name="actividad"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         public static bool UpdateActivity(Actividad actividad)
         {
             if (connection == null)
@@ -149,7 +223,13 @@ namespace PruebaBackendHackaton
             return connection.UpdateActivity(actividad);
         }
 
-        public static bool DeleteActivity(int id)
+        /// <summary>
+        /// Eliminar una actividad siempre y cuando no tenga usuarios inscritos
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        public static int DeleteActivity(int id)
         {
             if (connection == null)
             {
@@ -157,14 +237,9 @@ namespace PruebaBackendHackaton
             }
 
             return connection.DeleteActivity(id);
+            
         }
-        /*
-         TODO:
-            Return json(list<actividad> + list<usuario>)
 
-            GetActivitieUsers(int activitie_id)
-            Return json(List<actividad>)
-         */
         #endregion
     }
 }
