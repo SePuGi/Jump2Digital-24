@@ -54,13 +54,18 @@ namespace PruebaBackendHackaton.Controllers
             try
             {
                 Actividad activity = DataBase.GetActivityById(id);
-                return Ok(new
-                {
-                    success = true,
-                    resource = "GET",
-                    message = "Actividad encontrada",
-                    data = activity
-                });
+                Console.WriteLine(activity.ToString());
+                if(activity.Nombre != null && activity.Nombre != "")
+                    return Ok(new
+                    {
+                        success = true,
+                        resource = "GET",
+                        message = "Actividad encontrada",
+                        data = activity
+                    });
+
+                else
+                    throw new Exception("No se encontró la actividad");
             }
             catch (Exception ex)
             {
@@ -356,9 +361,9 @@ namespace PruebaBackendHackaton.Controllers
                             Actividad actividad = new Actividad
                             (
                                 0,
-                                element.GetProperty("nom").GetString(),
-                                element.GetProperty("descripció").GetString().Replace("'", ""),
-                                element.GetProperty("capacitat_màxima").GetInt32()
+                                element.GetProperty("nombre").GetString(),
+                                element.GetProperty("descripcion").GetString().Replace("'", ""),
+                                element.GetProperty("capacidad_maxima").GetInt32()
                             );
                             activities.Add(actividad);
                         }

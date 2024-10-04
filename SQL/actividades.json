@@ -1,0 +1,27 @@
+[
+    {
+    "nombre": "Sessió de Ioga",
+    "descripcion": "Classe de ioga per relaxar-se i estirar els músculs.",
+    "capacidad_maxima": 20
+    },
+    {
+    "nombre": "Taller de cuina",
+    "descripcion": "Aprendre a cuinar plats mediterranis.",
+    "capacidad_maxima": 15
+    },
+    {
+    "nombre": "Curs de fotografia",
+    "descripcion": "Taller per millorar les teves habilitats de fotografia.",
+    "capacidad_maxima": 10
+    },
+    {
+    "nombre": "Escalada en roca",
+    "descripcion": "Activitat d'escalada en un mur d'escalada interior.",
+    "capacidad_maxima": 12
+    },
+    {
+    "nombre": "Sessió de meditació",
+    "descripcion": "Sessió guiada de meditació per a la pau interior.",
+    "capacidad_maxima": 30
+    }
+]
