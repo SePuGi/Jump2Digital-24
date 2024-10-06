@@ -1,0 +1,15 @@
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\bin\Release\net6.0\ConDB.deps.json
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\bin\Release\net6.0\ConDB.dll
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\bin\Release\net6.0\ConDB.pdb
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\bin\Release\net6.0\Modelo.dll
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\bin\Release\net6.0\Modelo.pdb
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\obj\Release\net6.0\ConDB.csproj.AssemblyReference.cache
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\obj\Release\net6.0\ConDB.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\obj\Release\net6.0\ConDB.AssemblyInfoInputs.cache
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\obj\Release\net6.0\ConDB.AssemblyInfo.cs
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\obj\Release\net6.0\ConDB.csproj.CoreCompileInputs.cache
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\obj\Release\net6.0\ConDB.csproj.CopyComplete
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\obj\Release\net6.0\ConDB.dll
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\obj\Release\net6.0\refint\ConDB.dll
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\obj\Release\net6.0\ConDB.pdb
+C:\Users\Sergi\Desktop\hackaton\PruebaBackendHackaton\API\ConDB\obj\Release\net6.0\ref\ConDB.dll

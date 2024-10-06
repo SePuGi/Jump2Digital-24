@@ -65,7 +65,12 @@ namespace Modelo
         public int Capacidad_maxima
         {
             get => capacidad_maxima;
-            set => capacidad_maxima = value;
+            set {
+                if(ValidarCapacidad(value))
+                    capacidad_maxima = value;
+                else
+                    throw new Exception("La capacidad máxima no es válida");
+            }
         }
 
         public List<Usuario> Usuarios
@@ -87,6 +92,15 @@ namespace Modelo
         public bool ValidarDescripcion(string value)
         {
             if (value.Length > 0 && value.Length < 500)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool ValidarCapacidad(int value)
+        {
+            if (value > 1)
             {
                 return true;
             }
